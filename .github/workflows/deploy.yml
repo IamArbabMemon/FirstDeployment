@@ -28,7 +28,23 @@ jobs:
             npm install --production
             sudo systemctl restart myapp
             exit
-          EOF
+          EOF    
 
       - name: ✅ Clean Up
         run: rm -f private_key.pem
+
+      - name: Notify GitHub Deployment Success
+  uses: actions/github-script@v6
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    script: |
+      github.rest.repos.createCommitStatus({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        sha: context.sha,
+        state: "success",
+        target_url: "https://your-ec2-instance-url",
+        description: "Deployment completed successfully",
+        context: "Deployment Status"
+      });
+
